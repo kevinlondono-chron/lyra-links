@@ -1,0 +1,11 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.chron.lyra",
+      "sha256_cert_fingerprints":
+        ["54:87:CC:94:DC:27:F3:7F:17:75:37:68:14:E8:CC:8C:65:46:B3:3E:16:E6:E3:30:36:CC:D1:4C:49:50:A2:14"]
+    }
+  }
+]
