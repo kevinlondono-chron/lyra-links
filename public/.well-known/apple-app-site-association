@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["B3CJ56UULQ.com.chron.lyra"],
+        "paths": [ "/join/*" ]
+      }
+    ]
+  }
+}
