@@ -1,32 +1,56 @@
 <!doctype html>
 <html>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Open Lyra</title>
-  <style>body{font-family:system-ui;margin:24px}</style>
-  <h1>Te estamos llevando a Lyra…</h1>
-  <p>Si no ocurre nada, toca el botón de abajo o instala la app.</p>
-  <p><a id="open" href="#">Abrir en Lyra</a></p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Open Lyra</title>
+    <style>body{font-family:system-ui;margin:24px}</style>
+  </head>
+  <body>
+    <h1>Te estamos llevando a Lyra…</h1>
+    <p>Si no ocurre nada, toca el botón de abajo o instala la app.</p>
+    <p><a id="open" href="#">Abrir en Lyra</a></p>
 
-  <script>
-    // Lee el teamId del query string
-    const p = new URLSearchParams(location.search);
-    const teamId = p.get('teamId') || '';
+    <script>
+      const qs = new URLSearchParams(location.search);
+      const teamId = qs.get('teamId') || '';
+      const ua = navigator.userAgent;
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+      const isAndroid = /Android/i.test(ua);
 
-    // URL de Play Store
-    const play = 'https://play.google.com/store/apps/details?id=com.chron.lyra';
+      // App Store / Play Store
+      const IOS_STORE = 'itms-apps://itunes.apple.com/app/id6755198329';
+      const ANDROID_STORE = 'https://play.google.com/store/apps/details?id=com.chron.lyra';
 
-    // Intent URI que abre tu esquema nativo (Lyra)
-    const intent = `intent://join?teamId=${encodeURIComponent(teamId)}#Intent;scheme=lyra;package=com.chron.lyra;S.browser_fallback_url=${encodeURIComponent(play)};end`;
+      // Deep links
+      const IOS_DEEPLINK = `lyra://join?teamId=${encodeURIComponent(teamId)}`;
+      const ANDROID_INTENT =
+        `intent://join?teamId=${encodeURIComponent(teamId)}#Intent;scheme=lyra;package=com.chron.lyra;S.browser_fallback_url=${encodeURIComponent(ANDROID_STORE)};end`;
 
-    // 1) Intenta abrir la app
-    location.replace(intent);
+      // Navegación automática
+      if (isIOS) {
+        // Si Universal Links está verificado y la app instalada, el usuario no verá esta página.
+        // Si llega aquí (navegador o sin app), intenta deep link y luego App Store.
+        window.location.href = IOS_DEEPLINK;
+        setTimeout(() => { window.location.href = IOS_STORE; }, 1200);
+      } else if (isAndroid) {
+        // Android: intent con fallback a Play Store (mantiene tu comportamiento actual)
+        window.location.replace(ANDROID_INTENT);
+      } else {
+        // Escritorio/otros: no hacemos nada automático
+      }
 
-    // 2) Botón manual como respaldo
-    const btn = document.getElementById('open');
-    btn.onclick = (e) => { e.preventDefault(); location.href = intent; };
-
-    // 3) Safety net adicional: si algo bloquea el intent, manda a Play en 1.5s
-    setTimeout(() => { if (!document.hidden) location.href = play; }, 1500);
-  </script>
+      // Botón manual "Abrir en Lyra"
+      const btn = document.getElementById('open');
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (isIOS) {
+          window.location.href = IOS_DEEPLINK;
+          setTimeout(() => { window.location.href = IOS_STORE; }, 1200);
+        } else if (isAndroid) {
+          window.location.href = ANDROID_INTENT;
+        }
+      });
+    </script>
+  </body>
 </html>
